@@ -1,7 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { configDotenv } from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { JobPost } from './src/job-posts/entities/job-post.entity';
 import { SeederOptions } from 'typeorm-extension';
 
 configDotenv();
