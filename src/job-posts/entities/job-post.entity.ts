@@ -26,8 +26,8 @@ export class JobPost {
   @Column()
   createdAt: Date;
 
-  @Column()
-  imageUrl: string;
+  @Column({ type: 'text', nullable: true })
+  imageUrl: string | null;
 
   @Column()
   place: string;
