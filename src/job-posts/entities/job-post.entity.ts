@@ -1,4 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class JobPost {
@@ -23,7 +28,7 @@ export class JobPost {
   @Column()
   endTime: string;
 
-  @Column()
+  @CreateDateColumn()
   createdAt: Date;
 
   @Column({ type: 'text', nullable: true })
