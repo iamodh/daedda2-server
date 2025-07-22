@@ -10,7 +10,7 @@ export class JobPost {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ length: 20 })
   title: string;
 
   @Column()
@@ -34,7 +34,7 @@ export class JobPost {
   @Column({ type: 'text', nullable: true })
   imageUrl: string | null;
 
-  @Column()
+  @Column({ length: 20 })
   place: string;
 
   @Column()
