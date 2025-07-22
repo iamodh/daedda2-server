@@ -12,7 +12,7 @@ import {
 export class CreateJobPostDto {
   @IsString()
   @MinLength(1)
-  @MaxLength(20)
+  @MaxLength(40)
   readonly title: string;
 
   @IsString()
@@ -42,10 +42,14 @@ export class CreateJobPostDto {
 
   @IsString()
   @MinLength(1)
-  @MaxLength(20)
+  @MaxLength(40)
   readonly place: string;
 
   @IsOptional()
   @IsString()
   readonly imageUrl: string | null;
+
+  @IsString()
+  @MinLength(10)
+  readonly content: string;
 }

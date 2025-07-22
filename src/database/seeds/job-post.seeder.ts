@@ -19,6 +19,7 @@ export default class JobPostSeeder implements Seeder {
         place: '기장대게할인마트',
         totalHours: 4,
         createdAt: new Date('2025-07-15T19:55:00'),
+        content: '홀 서빙 및 테이블 정리 업무입니다.',
       },
       {
         title: '홍대 뷔페 식당 점심 서빙 알바 모집',
@@ -31,6 +32,7 @@ export default class JobPostSeeder implements Seeder {
         place: '홍대푸드뷔페',
         totalHours: 5,
         createdAt: new Date('2025-07-12T04:03:00'),
+        content: '뷔페 서빙 및 간단한 청소 업무입니다.',
       },
       {
         title: '이마트24 계산대 단기 알바',
@@ -43,6 +45,7 @@ export default class JobPostSeeder implements Seeder {
         place: '이마트24 역삼점',
         totalHours: 3,
         createdAt: new Date('2025-07-17T04:47:00'),
+        content: '계산 업무와 매장 정리 도와주실 분.',
       },
       {
         title: '카페 알바 급구 - 음료 서빙 및 정리',
@@ -55,6 +58,7 @@ export default class JobPostSeeder implements Seeder {
         place: '카페 노블레스',
         totalHours: 3,
         createdAt: new Date('2025-07-16T10:31:00'),
+        content: '음료 서빙 및 테이블 정리 담당입니다.',
       },
       {
         title: '편의점 야간 정리 및 계산',
@@ -67,6 +71,7 @@ export default class JobPostSeeder implements Seeder {
         place: 'GS25 부평중앙점',
         totalHours: 5,
         createdAt: new Date('2025-07-18T12:23:00'),
+        content: '야간 진열, 정리 및 계산 업무 포함.',
       },
       {
         title: '식당 주방보조 단기 아르바이트',
@@ -79,6 +84,7 @@ export default class JobPostSeeder implements Seeder {
         place: '해운대 국수집',
         totalHours: 3,
         createdAt: new Date('2025-07-17T02:06:00'),
+        content: '설거지 및 재료 손질 보조 업무입니다.',
       },
       {
         title: '행사 도우미 모집 (백화점 팝업존)',
@@ -91,6 +97,7 @@ export default class JobPostSeeder implements Seeder {
         place: '현대백화점 신사점',
         totalHours: 3,
         createdAt: new Date('2025-07-14T22:30:00'),
+        content: '팝업스토어 상품 안내 및 응대 업무입니다.',
       },
       {
         title: '서점 진열 보조 알바',
@@ -103,6 +110,7 @@ export default class JobPostSeeder implements Seeder {
         place: '동성로문고',
         totalHours: 5,
         createdAt: new Date('2025-07-18T07:02:00'),
+        content: '서적 정리 및 진열 보조 업무입니다.',
       },
       {
         title: '마트 시식코너 단기 알바',
@@ -115,6 +123,7 @@ export default class JobPostSeeder implements Seeder {
         place: '홈플러스 광주점',
         totalHours: 3,
         createdAt: new Date('2025-07-16T02:31:00'),
+        content: '시식 제품 준비 및 손님 응대 업무입니다.',
       },
       {
         title: '영화관 티켓/매점 스태프 알바',
@@ -122,11 +131,25 @@ export default class JobPostSeeder implements Seeder {
         pay: 60000,
         date: new Date('2025-07-18'),
         startTime: '20:00',
-        endTime: '26:00',
+        endTime: '24:00',
         imageUrl: null,
         place: 'CGV 용산아이파크몰',
         totalHours: 6,
         createdAt: new Date('2025-07-13T16:47:00'),
+        content: '티켓 발권 및 매점 상품 판매 업무입니다.',
+      },
+      {
+        title: '긴 제목 테스트',
+        location: '경남 김해시 대청동',
+        pay: 100000,
+        date: new Date('2025-07-22'),
+        startTime: '10:00',
+        endTime: '24:00',
+        imageUrl: null,
+        place: '긴 장소 테스트',
+        totalHours: 14,
+        createdAt: new Date(),
+        content: ` Lorem ipsum dolor sit amet consectetur adipisicing elit. Deleniti nesciunt esse atque voluptate consequatur, aperiam voluptatibus sint distinctio hic voluptatem voluptatum, quas dolorum exercitationem ut harum tenetur numquam laboriosam illo! Saepe et maxime delectus quas veritatis nihil? Rerum sit accusantium sequi nemo asperiores cumque magnam nam veritatis, vel soluta nulla explicabo nisi animi sint labore. Pariatur non quia voluptatibus nobis accusantium distinctio voluptates asperiores eaque illum odit rerum, atque explicabo voluptatum velit quae eveniet incidunt dicta. Exercitationem in quod accusamus voluptas inventore! Fugit eaque perferendis rem repudiandae ullam, nam hic voluptates cupiditate cumque fugiat. Atque doloribus nostrum sit autem odio.`,
       },
     ]);
   }
