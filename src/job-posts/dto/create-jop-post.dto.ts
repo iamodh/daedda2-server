@@ -19,7 +19,6 @@ export class CreateJobPostDto {
   readonly location: string;
 
   @IsNumber()
-  @Type(() => Number) // string -> number로 타입 변경
   readonly pay: number;
 
   @IsDate()
