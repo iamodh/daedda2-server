@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { JobPost } from './entities/job-post.entity';
 import { JobPostsService } from './job-posts.service';
 import { CreateJobPostDto } from 'src/job-posts/dto/create-jop-post.dto';
@@ -9,6 +9,11 @@ export class JobPostsController {
   @Get()
   findAll(): Promise<JobPost[]> {
     return this.jobPostsService.findAll();
+  }
+
+  @Get(':jobPostId')
+  findOne(@Param('jobPostId') jobPostId: number): Promise<JobPost | null> {
+    return this.jobPostsService.findOne(jobPostId);
   }
 
   @Post()
