@@ -3,6 +3,7 @@ import { JobPost } from './entities/job-post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateJobPostDto } from 'src/job-posts/dto/create-jop-post.dto';
+import { UpdateJobPostDto } from 'src/job-posts/dto/update-jop-post.dto';
 
 @Injectable()
 export class JobPostsService {
@@ -25,10 +26,20 @@ export class JobPostsService {
     return jobPost;
   }
 
-  async create(createJobPostDto: CreateJobPostDto): Promise<JobPost> {
-    const result = await this.jobPostsRepository.save({
+  async create(createJobPostDto: CreateJobPostDto) {
+    await this.jobPostsRepository.insert({
       ...createJobPostDto,
     });
-    return result;
+    return 'created';
+  }
+
+  async update(jobPostId: number, updateJobPostDto: UpdateJobPostDto) {
+    await this.jobPostsRepository.update(
+      { id: jobPostId },
+      {
+        ...updateJobPostDto,
+      },
+    );
+    return 'updated';
   }
 }

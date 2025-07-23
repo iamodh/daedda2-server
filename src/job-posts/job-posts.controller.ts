@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { JobPost } from './entities/job-post.entity';
 import { JobPostsService } from './job-posts.service';
 import { CreateJobPostDto } from 'src/job-posts/dto/create-jop-post.dto';
+import { UpdateJobPostDto } from 'src/job-posts/dto/update-jop-post.dto';
 
 @Controller('job-posts')
 export class JobPostsController {
@@ -16,8 +17,16 @@ export class JobPostsController {
     return this.jobPostsService.findOne(jobPostId);
   }
 
+  @Patch(':jobPostId')
+  update(
+    @Param('jobPostId') jobPostId: number,
+    @Body() updateJobPostDto: UpdateJobPostDto,
+  ): Promise<string> {
+    return this.jobPostsService.update(jobPostId, updateJobPostDto);
+  }
+
   @Post()
-  create(@Body() createJobPostDto: CreateJobPostDto): Promise<JobPost> {
+  create(@Body() createJobPostDto: CreateJobPostDto): Promise<string> {
     return this.jobPostsService.create(createJobPostDto);
   }
 }
