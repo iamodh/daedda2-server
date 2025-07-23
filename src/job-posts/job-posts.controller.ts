@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { JobPost } from './entities/job-post.entity';
 import { JobPostsService } from './job-posts.service';
-import { CreateJobPostDto } from 'src/job-posts/dto/create-jop-post.dto';
-import { UpdateJobPostDto } from 'src/job-posts/dto/update-jop-post.dto';
+import { CreateJobPostDto } from 'src/job-posts/dto/create-job-post.dto';
+import { UpdateJobPostDto } from 'src/job-posts/dto/update-job-post.dto';
 
 @Controller('job-posts')
 export class JobPostsController {

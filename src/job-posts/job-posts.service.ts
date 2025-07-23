@@ -2,8 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { JobPost } from './entities/job-post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateJobPostDto } from 'src/job-posts/dto/create-jop-post.dto';
-import { UpdateJobPostDto } from 'src/job-posts/dto/update-jop-post.dto';
+import { CreateJobPostDto } from 'src/job-posts/dto/create-job-post.dto';
+import { UpdateJobPostDto } from 'src/job-posts/dto/update-job-post.dto';
 
 @Injectable()
 export class JobPostsService {
