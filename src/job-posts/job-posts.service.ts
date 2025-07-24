@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { JobPost } from './entities/job-post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InsertResult, Repository, UpdateResult } from 'typeorm';
 import { CreateJobPostDto } from 'src/job-posts/dto/create-job-post.dto';
 import { UpdateJobPostDto } from 'src/job-posts/dto/update-job-post.dto';
 
@@ -12,12 +12,13 @@ export class JobPostsService {
     private jobPostsRepository: Repository<JobPost>,
   ) {}
 
-  findAll(): Promise<JobPost[]> {
-    return this.jobPostsRepository.find();
+  async findAll(): Promise<JobPost[]> {
+    const found = await this.jobPostsRepository.find();
+    return found;
   }
 
-  findOne(id: number): Promise<JobPost | null> {
-    const jobPost = this.jobPostsRepository.findOneBy({ id });
+  async findOne(id: number): Promise<JobPost | null> {
+    const jobPost = await this.jobPostsRepository.findOneBy({ id });
 
     if (jobPost === null) {
       throw new NotFoundException(`Post with Id ${id} not found`);
@@ -26,20 +27,28 @@ export class JobPostsService {
     return jobPost;
   }
 
-  async create(createJobPostDto: CreateJobPostDto) {
-    await this.jobPostsRepository.insert({
+  async create(createJobPostDto: CreateJobPostDto): Promise<InsertResult> {
+    const result = await this.jobPostsRepository.insert({
       ...createJobPostDto,
     });
-    return 'created';
+    return result;
   }
 
-  async update(jobPostId: number, updateJobPostDto: UpdateJobPostDto) {
-    await this.jobPostsRepository.update(
+  async update(
+    jobPostId: number,
+    updateJobPostDto: UpdateJobPostDto,
+  ): Promise<UpdateResult> {
+    const result = await this.jobPostsRepository.update(
       { id: jobPostId },
       {
         ...updateJobPostDto,
       },
     );
-    return 'updated';
+    return result;
+  }
+
+  async delete(jobPostId: number) {
+    const result = await this.jobPostsRepository.delete({ id: jobPostId });
+    return result;
   }
 }
