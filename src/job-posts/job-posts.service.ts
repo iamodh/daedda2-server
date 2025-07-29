@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { InsertResult, Repository, UpdateResult } from 'typeorm';
 import { CreateJobPostDto } from 'src/job-posts/dto/create-job-post.dto';
 import { UpdateJobPostDto } from 'src/job-posts/dto/update-job-post.dto';
+import { CursorPaginationDto } from 'src/job-posts/dto/cursor-pagintaion.dto';
 
 @Injectable()
 export class JobPostsService {
@@ -12,9 +13,32 @@ export class JobPostsService {
     private jobPostsRepository: Repository<JobPost>,
   ) {}
 
-  async findAll(): Promise<JobPost[]> {
-    const found = await this.jobPostsRepository.find();
-    return found;
+  async findAll(
+    cursorPaginationDto: CursorPaginationDto,
+  ): Promise<{ data: JobPost[]; nextCursor: string | null }> {
+    const { cursor, limit = 5 } = cursorPaginationDto;
+
+    const queryBuilder = this.jobPostsRepository
+      .createQueryBuilder('job_post')
+      .orderBy('job_post.createdAt', 'DESC')
+      .limit(limit + 1);
+
+    if (cursor) {
+      queryBuilder.where('job_post.createdAt < :cursor', { cursor });
+    }
+
+    const jobPosts = await queryBuilder.getMany();
+
+    const hasNextPage = jobPosts.length > limit;
+    if (hasNextPage) {
+      jobPosts.pop();
+    }
+
+    const nextCursor = hasNextPage
+      ? jobPosts[jobPosts.length - 1].createdAt.toISOString()
+      : null;
+
+    return { data: jobPosts, nextCursor };
   }
 
   async findOne(id: number): Promise<JobPost | null> {

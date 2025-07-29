@@ -6,19 +6,23 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { JobPost } from './entities/job-post.entity';
 import { JobPostsService } from './job-posts.service';
 import { CreateJobPostDto } from 'src/job-posts/dto/create-job-post.dto';
 import { UpdateJobPostDto } from 'src/job-posts/dto/update-job-post.dto';
 import { DeleteResult, InsertResult, UpdateResult } from 'typeorm';
+import { CursorPaginationDto } from 'src/job-posts/dto/cursor-pagintaion.dto';
 
 @Controller('job-posts')
 export class JobPostsController {
   constructor(private readonly jobPostsService: JobPostsService) {}
   @Get()
-  findAll(): Promise<JobPost[]> {
-    return this.jobPostsService.findAll();
+  findAll(
+    @Query() cursorPaginationDto: CursorPaginationDto,
+  ): Promise<{ data: JobPost[]; nextCursor: string | null }> {
+    return this.jobPostsService.findAll(cursorPaginationDto);
   }
 
   @Post()
