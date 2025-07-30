@@ -13,16 +13,16 @@ import { JobPostsService } from './job-posts.service';
 import { CreateJobPostDto } from 'src/job-posts/dto/create-job-post.dto';
 import { UpdateJobPostDto } from 'src/job-posts/dto/update-job-post.dto';
 import { DeleteResult, InsertResult, UpdateResult } from 'typeorm';
-import { CursorPaginationDto } from 'src/job-posts/dto/cursor-pagintaion.dto';
+import { JobPostQueryDto } from 'src/job-posts/dto/job-post-query.dto';
 
 @Controller('job-posts')
 export class JobPostsController {
   constructor(private readonly jobPostsService: JobPostsService) {}
   @Get()
   findAll(
-    @Query() cursorPaginationDto: CursorPaginationDto,
+    @Query() jobPostQueryDto: JobPostQueryDto,
   ): Promise<{ data: JobPost[]; nextCursor: string | null }> {
-    return this.jobPostsService.findAll(cursorPaginationDto);
+    return this.jobPostsService.findAll(jobPostQueryDto);
   }
 
   @Post()

@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { InsertResult, Repository, UpdateResult } from 'typeorm';
 import { CreateJobPostDto } from 'src/job-posts/dto/create-job-post.dto';
 import { UpdateJobPostDto } from 'src/job-posts/dto/update-job-post.dto';
-import { CursorPaginationDto } from 'src/job-posts/dto/cursor-pagintaion.dto';
+import { JobPostQueryDto } from 'src/job-posts/dto/job-post-query.dto';
 
 @Injectable()
 export class JobPostsService {
@@ -14,17 +14,25 @@ export class JobPostsService {
   ) {}
 
   async findAll(
-    cursorPaginationDto: CursorPaginationDto,
+    jobPostQueryDto: JobPostQueryDto,
   ): Promise<{ data: JobPost[]; nextCursor: string | null }> {
-    const { cursor, limit = 5 } = cursorPaginationDto;
-
+    const { cursor, limit = 5, searchKeyword } = jobPostQueryDto;
     const queryBuilder = this.jobPostsRepository
       .createQueryBuilder('job_post')
+      .where('1=1')
       .orderBy('job_post.createdAt', 'DESC')
       .limit(limit + 1);
 
+    if (searchKeyword) {
+      queryBuilder.andWhere(
+        '(job_post.title ILIKE :keyword OR job_post.content ILIKE :keyword)',
+        {
+          keyword: `%${searchKeyword}%`,
+        },
+      );
+    }
     if (cursor) {
-      queryBuilder.where('job_post.createdAt < :cursor', { cursor });
+      queryBuilder.andWhere('job_post.createdAt < :cursor', { cursor });
     }
 
     const jobPosts = await queryBuilder.getMany();
