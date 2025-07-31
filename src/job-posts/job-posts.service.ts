@@ -72,12 +72,16 @@ export class JobPostsService {
   async findAll(
     jobPostQueryDto: JobPostQueryDto,
   ): Promise<{ data: JobPost[]; nextCursor: string | null }> {
-    const { cursor, limit = 5 } = jobPostQueryDto;
+    const { cursor, limit = 5, showPast = false } = jobPostQueryDto;
     const queryBuilder = this.jobPostsRepository
       .createQueryBuilder('job_post')
       .where('1=1')
       .orderBy('job_post.createdAt', 'DESC')
       .limit(limit + 1);
+
+    if (!showPast) {
+      queryBuilder.andWhere('job_post.date >= CURRENT_DATE');
+    }
 
     this.applyFitlers(queryBuilder, jobPostQueryDto);
 

@@ -1,5 +1,11 @@
-import { Type } from 'class-transformer';
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import {
+  IsBoolean,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export enum WorkTime {
   SHORT = 'short',
@@ -33,4 +39,9 @@ export class JobPostQueryDto {
   @IsEnum(HourlyWage)
   @IsOptional()
   hourlyWage?: HourlyWage;
+
+  @IsBoolean()
+  @IsOptional()
+  @Transform(({ value }) => value === 'true')
+  showPast?: boolean;
 }
