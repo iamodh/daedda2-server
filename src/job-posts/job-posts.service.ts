@@ -1,7 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { JobPost } from './entities/job-post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { InsertResult, Repository, UpdateResult } from 'typeorm';
+import {
+  InsertResult,
+  Repository,
+  SelectQueryBuilder,
+  UpdateResult,
+} from 'typeorm';
 import { CreateJobPostDto } from 'src/job-posts/dto/create-job-post.dto';
 import { UpdateJobPostDto } from 'src/job-posts/dto/update-job-post.dto';
 import {
@@ -12,27 +17,11 @@ import {
 
 @Injectable()
 export class JobPostsService {
-  constructor(
-    @InjectRepository(JobPost)
-    private jobPostsRepository: Repository<JobPost>,
-  ) {}
-
-  async findAll(
-    jobPostQueryDto: JobPostQueryDto,
-  ): Promise<{ data: JobPost[]; nextCursor: string | null }> {
-    const {
-      cursor,
-      limit = 5,
-      searchKeyword,
-      hourlyWage,
-      workTime,
-    } = jobPostQueryDto;
-    const queryBuilder = this.jobPostsRepository
-      .createQueryBuilder('job_post')
-      .where('1=1')
-      .orderBy('job_post.createdAt', 'DESC')
-      .limit(limit + 1);
-
+  // 필터 로직
+  private applyFitlers(
+    queryBuilder: SelectQueryBuilder<JobPost>,
+    { searchKeyword, hourlyWage, workTime }: JobPostQueryDto,
+  ) {
     if (searchKeyword) {
       queryBuilder.andWhere(
         '(job_post.title ILIKE :keyword OR job_post.content ILIKE :keyword)',
@@ -73,6 +62,24 @@ export class JobPostsService {
         });
       }
     }
+  }
+
+  constructor(
+    @InjectRepository(JobPost)
+    private jobPostsRepository: Repository<JobPost>,
+  ) {}
+
+  async findAll(
+    jobPostQueryDto: JobPostQueryDto,
+  ): Promise<{ data: JobPost[]; nextCursor: string | null }> {
+    const { cursor, limit = 5 } = jobPostQueryDto;
+    const queryBuilder = this.jobPostsRepository
+      .createQueryBuilder('job_post')
+      .where('1=1')
+      .orderBy('job_post.createdAt', 'DESC')
+      .limit(limit + 1);
+
+    this.applyFitlers(queryBuilder, jobPostQueryDto);
 
     if (cursor) {
       queryBuilder.andWhere('job_post.createdAt < :cursor', { cursor });
