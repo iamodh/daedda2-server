@@ -4,7 +4,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { InsertResult, Repository, UpdateResult } from 'typeorm';
 import { CreateJobPostDto } from 'src/job-posts/dto/create-job-post.dto';
 import { UpdateJobPostDto } from 'src/job-posts/dto/update-job-post.dto';
-import { JobPostQueryDto } from 'src/job-posts/dto/job-post-query.dto';
+import {
+  HourlyWage,
+  JobPostQueryDto,
+  WorkTime,
+} from 'src/job-posts/dto/job-post-query.dto';
 
 @Injectable()
 export class JobPostsService {
@@ -16,7 +20,13 @@ export class JobPostsService {
   async findAll(
     jobPostQueryDto: JobPostQueryDto,
   ): Promise<{ data: JobPost[]; nextCursor: string | null }> {
-    const { cursor, limit = 5, searchKeyword } = jobPostQueryDto;
+    const {
+      cursor,
+      limit = 5,
+      searchKeyword,
+      hourlyWage,
+      workTime,
+    } = jobPostQueryDto;
     const queryBuilder = this.jobPostsRepository
       .createQueryBuilder('job_post')
       .where('1=1')
@@ -31,6 +41,39 @@ export class JobPostsService {
         },
       );
     }
+
+    if (workTime) {
+      if (workTime === WorkTime.SHORT) {
+        queryBuilder.andWhere('job_post.totalHours <= :maxHour', {
+          maxHour: 4,
+        });
+      } else if (workTime === WorkTime.MEDIUM) {
+        queryBuilder.andWhere(
+          'job_post.totalHours > :minHour AND job_post.totalHours <= :maxHour',
+          {
+            minHour: 4,
+            maxHour: 8,
+          },
+        );
+      } else if (workTime === WorkTime.LONG) {
+        queryBuilder.andWhere('job_post.totalHours > :maxHour', {
+          maxHour: 8,
+        });
+      }
+    }
+
+    if (hourlyWage) {
+      if (hourlyWage === HourlyWage.LOW) {
+        queryBuilder.andWhere('job_post.hourlyWage <= :hourlyWage', {
+          hourlyWage: 10000,
+        });
+      } else if (hourlyWage === HourlyWage.HIGH) {
+        queryBuilder.andWhere('job_post.hourlyWage > :hourlyWage', {
+          hourlyWage: 10000,
+        });
+      }
+    }
+
     if (cursor) {
       queryBuilder.andWhere('job_post.createdAt < :cursor', { cursor });
     }

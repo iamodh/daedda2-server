@@ -52,4 +52,7 @@ export class CreateJobPostDto {
   @IsString()
   @MinLength(10)
   readonly content: string;
+
+  @IsNumber()
+  readonly hourlyWage: number;
 }

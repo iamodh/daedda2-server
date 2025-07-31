@@ -42,4 +42,7 @@ export class JobPost {
 
   @Column({ type: 'text' })
   content: string;
+
+  @Column()
+  hourlyWage: number;
 }

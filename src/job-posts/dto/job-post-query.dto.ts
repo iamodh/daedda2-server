@@ -1,5 +1,16 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+
+export enum WorkTime {
+  SHORT = 'short',
+  MEDIUM = 'medium',
+  LONG = 'long',
+}
+
+export enum HourlyWage {
+  LOW = 'low',
+  HIGH = 'high',
+}
 
 export class JobPostQueryDto {
   @IsOptional()
@@ -14,4 +25,12 @@ export class JobPostQueryDto {
   @IsOptional()
   @IsString()
   searchKeyword?: string;
+
+  @IsEnum(WorkTime)
+  @IsOptional()
+  workTime?: WorkTime;
+
+  @IsEnum(HourlyWage)
+  @IsOptional()
+  hourlyWage?: HourlyWage;
 }
