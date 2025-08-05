@@ -30,7 +30,9 @@ export class AuthService {
 
     return {
       // generate JWT
-      access_token: await this.jwtService.signAsync(payload),
+      access_token: await this.jwtService.signAsync(payload, {
+        expiresIn: '12h',
+      }),
     };
   }
 
