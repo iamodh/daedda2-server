@@ -1,12 +1,17 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 20 })
-  name: string;
+  @Column({ length: 20, unique: true })
+  username: string;
 
   @Column({ length: 20 })
   nickname: string;
@@ -23,9 +28,9 @@ export class User {
   @Column()
   isSocial: boolean;
 
-  @Column()
+  @Column({ type: 'text', nullable: true, default: null })
   imageUrl: string;
 
-  @Column()
+  @CreateDateColumn()
   createdAt: Date;
 }
