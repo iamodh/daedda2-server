@@ -36,8 +36,9 @@ export class AuthService {
 
   async getProfile(req: AuthRequest): Promise<User | undefined> {
     const username = req.user.username;
-    const user = await this.usersService.findOne(username);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...user } = await this.usersService.findOne(username);
 
-    return user;
+    return user as User;
   }
 }

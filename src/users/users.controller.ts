@@ -7,7 +7,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get(':username')
-  findOne(@Param('username') username: string): Promise<User | undefined> {
-    return this.usersService.findOne(username);
+  async findOne(@Param('username') username: string): Promise<User> {
+    return await this.usersService.findOne(username);
   }
 }
