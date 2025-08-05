@@ -31,7 +31,7 @@ export class JobPost {
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'text', nullable: true, default: null })
   imageUrl: string | null;
 
   @Column({ length: 40 })

@@ -17,6 +17,80 @@ import {
 
 @Injectable()
 export class JobPostsService {
+  constructor(
+    @InjectRepository(JobPost)
+    private jobPostsRepository: Repository<JobPost>,
+  ) {}
+
+  async findAll(
+    jobPostQueryDto: JobPostQueryDto,
+  ): Promise<{ data: JobPost[]; nextCursor: string | null }> {
+    const { cursor, limit = 5, showPast = false } = jobPostQueryDto;
+    const queryBuilder = this.jobPostsRepository
+      .createQueryBuilder('job_post')
+      .where('1=1')
+      .orderBy('job_post.createdAt', 'DESC')
+      .limit(limit + 1);
+
+    if (!showPast) {
+      queryBuilder.andWhere('job_post.date >= CURRENT_DATE');
+    }
+
+    this.applyFitlers(queryBuilder, jobPostQueryDto);
+
+    if (cursor) {
+      queryBuilder.andWhere('job_post.createdAt < :cursor', { cursor });
+    }
+
+    const jobPosts = await queryBuilder.getMany();
+
+    const hasNextPage = jobPosts.length > limit;
+    if (hasNextPage) {
+      jobPosts.pop();
+    }
+
+    const nextCursor = hasNextPage
+      ? jobPosts[jobPosts.length - 1].createdAt.toISOString()
+      : null;
+
+    return { data: jobPosts, nextCursor };
+  }
+
+  async findOne(id: number): Promise<JobPost | undefined> {
+    const jobPost = await this.jobPostsRepository.findOneBy({ id });
+
+    if (jobPost === null) {
+      throw new NotFoundException(`Post with Id ${id} not found`);
+    }
+
+    return jobPost;
+  }
+
+  async create(createJobPostDto: CreateJobPostDto): Promise<InsertResult> {
+    const result = await this.jobPostsRepository.insert({
+      ...createJobPostDto,
+    });
+    return result;
+  }
+
+  async update(
+    jobPostId: number,
+    updateJobPostDto: UpdateJobPostDto,
+  ): Promise<UpdateResult> {
+    const result = await this.jobPostsRepository.update(
+      { id: jobPostId },
+      {
+        ...updateJobPostDto,
+      },
+    );
+    return result;
+  }
+
+  async delete(jobPostId: number) {
+    const result = await this.jobPostsRepository.delete({ id: jobPostId });
+    return result;
+  }
+
   // 필터 로직
   private applyFitlers(
     queryBuilder: SelectQueryBuilder<JobPost>,
@@ -62,79 +136,5 @@ export class JobPostsService {
         });
       }
     }
-  }
-
-  constructor(
-    @InjectRepository(JobPost)
-    private jobPostsRepository: Repository<JobPost>,
-  ) {}
-
-  async findAll(
-    jobPostQueryDto: JobPostQueryDto,
-  ): Promise<{ data: JobPost[]; nextCursor: string | null }> {
-    const { cursor, limit = 5, showPast = false } = jobPostQueryDto;
-    const queryBuilder = this.jobPostsRepository
-      .createQueryBuilder('job_post')
-      .where('1=1')
-      .orderBy('job_post.createdAt', 'DESC')
-      .limit(limit + 1);
-
-    if (!showPast) {
-      queryBuilder.andWhere('job_post.date >= CURRENT_DATE');
-    }
-
-    this.applyFitlers(queryBuilder, jobPostQueryDto);
-
-    if (cursor) {
-      queryBuilder.andWhere('job_post.createdAt < :cursor', { cursor });
-    }
-
-    const jobPosts = await queryBuilder.getMany();
-
-    const hasNextPage = jobPosts.length > limit;
-    if (hasNextPage) {
-      jobPosts.pop();
-    }
-
-    const nextCursor = hasNextPage
-      ? jobPosts[jobPosts.length - 1].createdAt.toISOString()
-      : null;
-
-    return { data: jobPosts, nextCursor };
-  }
-
-  async findOne(id: number): Promise<JobPost | null> {
-    const jobPost = await this.jobPostsRepository.findOneBy({ id });
-
-    if (jobPost === null) {
-      throw new NotFoundException(`Post with Id ${id} not found`);
-    }
-
-    return jobPost;
-  }
-
-  async create(createJobPostDto: CreateJobPostDto): Promise<InsertResult> {
-    const result = await this.jobPostsRepository.insert({
-      ...createJobPostDto,
-    });
-    return result;
-  }
-
-  async update(
-    jobPostId: number,
-    updateJobPostDto: UpdateJobPostDto,
-  ): Promise<UpdateResult> {
-    const result = await this.jobPostsRepository.update(
-      { id: jobPostId },
-      {
-        ...updateJobPostDto,
-      },
-    );
-    return result;
-  }
-
-  async delete(jobPostId: number) {
-    const result = await this.jobPostsRepository.delete({ id: jobPostId });
-    return result;
   }
 }

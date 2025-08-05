@@ -31,7 +31,7 @@ export class JobPostsController {
   }
 
   @Get(':jobPostId')
-  findOne(@Param('jobPostId') jobPostId: number): Promise<JobPost | null> {
+  findOne(@Param('jobPostId') jobPostId: number): Promise<JobPost | undefined> {
     return this.jobPostsService.findOne(jobPostId);
   }
 
