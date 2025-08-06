@@ -1,10 +1,13 @@
 import { Max, Min } from 'class-validator';
 import {
+  BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
+import * as bcrypt from 'bcrypt';
 
 @Entity()
 export class User {
@@ -34,4 +37,9 @@ export class User {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @BeforeInsert()
+  private beforeInsert() {
+    this.password = bcrypt.hashSync(this.password, 10);
+  }
 }

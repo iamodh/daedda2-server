@@ -10,6 +10,7 @@ import { SignInDto } from 'src/auth/dto/signIn.dto';
 import { SignUpDto } from 'src/auth/dto/signUp.dto';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
+import * as bcrypt from 'bcrypt';
 
 export interface AuthRequest extends Request {
   user: {
@@ -27,7 +28,12 @@ export class AuthService {
   async signIn(signInDto: SignInDto): Promise<{ access_token: string }> {
     const user = await this.usersService.findOne(signInDto.username);
 
-    if (user?.password !== signInDto.password) {
+    if (!user) {
+      throw new NotFoundException('존재하지 않는 아이디입니다.');
+    }
+
+    console.log(signInDto.username, signInDto.password);
+    if (!bcrypt.compareSync(signInDto.password, user.password)) {
       throw new UnauthorizedException();
     }
 
