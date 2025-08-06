@@ -1,5 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { SignUpDto } from 'src/auth/dto/signUp.dto';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 
@@ -10,12 +11,17 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
-  async findOne(username: string): Promise<User> {
+  async findOne(username: string): Promise<User | null> {
     const user = await this.usersRepository.findOneBy({ username });
 
-    if (user === null) {
-      throw new NotFoundException(`User with id ${username} is not found`);
-    }
+    console.log(user);
+
     return user;
+  }
+
+  async create(signUpDto: SignUpDto): Promise<User> {
+    const user = this.usersRepository.create({ ...signUpDto });
+
+    return await this.usersRepository.save(user);
   }
 }
