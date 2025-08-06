@@ -1,3 +1,4 @@
+import { Max, Min } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -10,9 +11,12 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Min(8)
+  @Max(20)
   @Column({ length: 20, unique: true })
   username: string;
 
+  @Max(20)
   @Column({ length: 20 })
   nickname: string;
 
@@ -24,9 +28,6 @@ export class User {
 
   @Column()
   password: string;
-
-  @Column()
-  isSocial: boolean;
 
   @Column({ type: 'text', nullable: true, default: null })
   imageUrl: string;
