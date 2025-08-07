@@ -26,7 +26,9 @@ export class AuthService {
   ) {}
 
   async signIn(signInDto: SignInDto): Promise<{ access_token: string }> {
-    const user = await this.usersService.findOne(signInDto.username);
+    const user = await this.usersService.findOne({
+      username: signInDto.username,
+    });
 
     if (!user) {
       throw new NotFoundException('존재하지 않는 아이디입니다.');
@@ -46,7 +48,9 @@ export class AuthService {
   }
 
   async signUp(signUpDto: SignUpDto): Promise<{ access_token: string }> {
-    const existingUser = await this.usersService.findOne(signUpDto.username);
+    const existingUser = await this.usersService.findOne({
+      username: signUpDto.username,
+    });
     if (existingUser) {
       throw new ConflictException('이미 존재하는 사용자입니다.');
     }
@@ -61,7 +65,7 @@ export class AuthService {
 
   async getProfile(req: AuthRequest): Promise<User> {
     const username = req.user.username;
-    const user = await this.usersService.findOne(username);
+    const user = await this.usersService.findOne({ username });
     if (!user) {
       throw new NotFoundException(
         `${username}에 해당하는 유저를 찾을 수 없습니다.`,

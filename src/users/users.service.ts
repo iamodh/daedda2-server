@@ -11,10 +11,21 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
-  async findOne(username: string): Promise<User | null> {
-    const user = await this.usersRepository.findOneBy({ username });
+  async findOne(identifier: {
+    username?: string;
+    userId?: number;
+  }): Promise<User | null> {
+    const { username, userId } = identifier;
 
-    return user;
+    if (username) {
+      return await this.usersRepository.findOneBy({ username });
+    }
+
+    if (userId) {
+      return await this.usersRepository.findOneBy({ id: userId });
+    }
+
+    return null;
   }
 
   async create(signUpDto: SignUpDto): Promise<User> {
