@@ -32,7 +32,6 @@ export class AuthService {
       throw new NotFoundException('존재하지 않는 아이디입니다.');
     }
 
-    console.log(signInDto.username, signInDto.password);
     if (!bcrypt.compareSync(signInDto.password, user.password)) {
       throw new UnauthorizedException();
     }
@@ -42,9 +41,7 @@ export class AuthService {
 
     return {
       // generate JWT
-      access_token: await this.jwtService.signAsync(payload, {
-        expiresIn: '12h',
-      }),
+      access_token: await this.jwtService.signAsync(payload),
     };
   }
 
@@ -57,9 +54,7 @@ export class AuthService {
     const newUser = await this.usersService.create(signUpDto);
 
     const payload = { sub: newUser.id, username: newUser.username };
-    const access_token = await this.jwtService.signAsync(payload, {
-      expiresIn: '12h',
-    });
+    const access_token = await this.jwtService.signAsync(payload);
 
     return { access_token };
   }
