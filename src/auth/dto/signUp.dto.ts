@@ -1,5 +1,6 @@
 import {
   IsEmail,
+  IsOptional,
   IsPhoneNumber,
   IsString,
   MaxLength,
@@ -25,4 +26,7 @@ export class SignUpDto {
 
   @IsEmail()
   readonly email: string;
+
+  @IsOptional()
+  readonly imageUrl?: string;
 }
