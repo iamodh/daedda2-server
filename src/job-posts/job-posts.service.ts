@@ -56,9 +56,15 @@ export class JobPostsService {
     return { data: jobPosts, nextCursor };
   }
 
-  async findOne(id: number): Promise<JobPost | undefined> {
-    const jobPost = await this.jobPostsRepository.findOneBy({ id });
-
+  async findOne(id: number): Promise<JobPost | null> {
+    const jobPost = await this.jobPostsRepository.findOne({
+      where: { id },
+      relations: { user: true },
+      select: {
+        // JobPost는 전부(기본값) + user는 필요한 것만
+        user: { id: true, nickname: true, imageUrl: true },
+      },
+    });
     if (jobPost === null) {
       throw new NotFoundException(`Post with Id ${id} not found`);
     }
