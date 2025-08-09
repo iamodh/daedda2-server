@@ -1,7 +1,10 @@
+import { User } from '../../users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -45,4 +48,15 @@ export class JobPost {
 
   @Column()
   hourlyWage: number;
+
+  @ManyToOne(() => User, {
+    nullable: false,
+    onDelete: 'RESTRICT',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'userId' })
+  user: User;
+
+  @Column()
+  userId: number;
 }

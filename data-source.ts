@@ -15,7 +15,7 @@ const options: DataSourceOptions & SeederOptions = {
   password: config.get<string>('DB_PASSWORD'),
   database: config.get<string>('DB_NAME'),
 
-  seeds: ['src/database/seeds/**/*{.ts,.js}'],
+  seeds: ['src/database/seeds/index.seeder.ts'],
   entities: ['src/**/*.entity.ts'],
 };
 

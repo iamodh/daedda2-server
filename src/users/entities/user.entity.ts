@@ -1,4 +1,4 @@
-import { Max, Min } from 'class-validator';
+import { IsOptional, Length } from 'class-validator';
 import {
   BeforeInsert,
   Column,
@@ -14,12 +14,11 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Min(8)
-  @Max(20)
+  @Length(8, 20)
   @Column({ length: 20, unique: true })
   username: string;
 
-  @Max(20)
+  @Length(1, 20)
   @Column({ length: 20 })
   nickname: string;
 
@@ -32,11 +31,13 @@ export class User {
   @Column()
   password: string;
 
+  @IsOptional()
   @Column({ type: 'text', nullable: true, default: null })
-  imageUrl: string;
+  imageUrl?: string | null;
 
   @CreateDateColumn()
   createdAt: Date;
+  jobPosts: any;
 
   @BeforeInsert()
   private beforeInsert() {
