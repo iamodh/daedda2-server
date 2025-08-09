@@ -55,4 +55,7 @@ export class CreateJobPostDto {
 
   @IsNumber()
   readonly hourlyWage: number;
+
+  @IsNumber()
+  readonly userId: number;
 }

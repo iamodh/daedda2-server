@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { JobPost } from './entities/job-post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
@@ -81,19 +85,33 @@ export class JobPostsService {
 
   async update(
     jobPostId: number,
+    ownerId: number,
     updateJobPostDto: UpdateJobPostDto,
   ): Promise<UpdateResult> {
     const result = await this.jobPostsRepository.update(
-      { id: jobPostId },
+      { id: jobPostId, userId: ownerId },
       {
         ...updateJobPostDto,
       },
     );
+
+    if (result.affected === 0) {
+      throw new ForbiddenException('해당 글의 수정 권한이 없습니다.');
+    }
+
     return result;
   }
 
-  async delete(jobPostId: number) {
-    const result = await this.jobPostsRepository.delete({ id: jobPostId });
+  async delete(jobPostId: number, ownerId: number) {
+    const result = await this.jobPostsRepository.delete({
+      id: jobPostId,
+      userId: ownerId,
+    });
+
+    if (result.affected === 0) {
+      throw new ForbiddenException('해당 글의 삭제 권한이 없습니다.');
+    }
+
     return result;
   }
 

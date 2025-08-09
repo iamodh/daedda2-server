@@ -8,7 +8,6 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { AuthRequest, AuthService } from 'src/auth/auth.service';
 import { SignInDto } from 'src/auth/dto/signIn.dto';
