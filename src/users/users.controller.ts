@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
-import { UpdateUserDto } from 'src/users/dto/updateUserDto';
-import { User } from 'src/users/entities/user.entity';
-import { UsersService } from 'src/users/users.service';
+import { UpdateUserDto } from './dto/updateUserDto';
+import { User } from './entities/user.entity';
+import { UsersService } from './users.service';
 import { UpdateResult } from 'typeorm';
 
 @Controller('users')

@@ -12,12 +12,12 @@ import {
 } from '@nestjs/common';
 import { JobPost } from './entities/job-post.entity';
 import { JobPostsService } from './job-posts.service';
-import { CreateJobPostDto } from 'src/job-posts/dto/create-job-post.dto';
-import { UpdateJobPostDto } from 'src/job-posts/dto/update-job-post.dto';
+import { CreateJobPostDto } from '../job-posts/dto/create-job-post.dto';
+import { UpdateJobPostDto } from '../job-posts/dto/update-job-post.dto';
 import { DeleteResult, InsertResult, UpdateResult } from 'typeorm';
-import { JobPostQueryDto } from 'src/job-posts/dto/job-post-query.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { AuthRequest } from 'src/auth/auth.service';
+import { JobPostQueryDto } from '../job-posts/dto/job-post-query.dto';
+import { AuthGuard } from '../auth/auth.guard';
+import { AuthRequest } from '../auth/auth.service';
 
 @Controller('job-posts')
 export class JobPostsController {

@@ -6,10 +6,10 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { SignInDto } from 'src/auth/dto/signIn.dto';
-import { SignUpDto } from 'src/auth/dto/signUp.dto';
-import { User } from 'src/users/entities/user.entity';
-import { UsersService } from 'src/users/users.service';
+import { SignInDto } from './dto/signIn.dto';
+import { SignUpDto } from './dto/signUp.dto';
+import { User } from '../users/entities/user.entity';
+import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 
 export interface AuthRequest extends Request {

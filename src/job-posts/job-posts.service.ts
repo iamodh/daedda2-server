@@ -11,13 +11,13 @@ import {
   SelectQueryBuilder,
   UpdateResult,
 } from 'typeorm';
-import { CreateJobPostDto } from 'src/job-posts/dto/create-job-post.dto';
-import { UpdateJobPostDto } from 'src/job-posts/dto/update-job-post.dto';
+import { CreateJobPostDto } from '../job-posts/dto/create-job-post.dto';
+import { UpdateJobPostDto } from '../job-posts/dto/update-job-post.dto';
 import {
   HourlyWage,
   JobPostQueryDto,
   WorkTime,
-} from 'src/job-posts/dto/job-post-query.dto';
+} from '../job-posts/dto/job-post-query.dto';
 
 @Injectable()
 export class JobPostsService {
