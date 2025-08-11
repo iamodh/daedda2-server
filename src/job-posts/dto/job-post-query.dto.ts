@@ -21,7 +21,7 @@ export enum HourlyWage {
 export class JobPostQueryDto {
   @IsOptional()
   @IsString()
-  cursor?: string;
+  cursor?: string | null;
 
   @Type(() => Number)
   @IsOptional()
