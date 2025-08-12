@@ -40,7 +40,7 @@ export class JobPostsService {
       queryBuilder.andWhere('job_post.date >= CURRENT_DATE');
     }
 
-    this.applyFitlers(queryBuilder, jobPostQueryDto);
+    this.applyFilters(queryBuilder, jobPostQueryDto);
 
     if (cursor) {
       queryBuilder.andWhere('job_post.createdAt < :cursor', { cursor });
@@ -116,7 +116,7 @@ export class JobPostsService {
   }
 
   // 필터 로직
-  private applyFitlers(
+  private applyFilters(
     queryBuilder: SelectQueryBuilder<JobPost>,
     { searchKeyword, hourlyWage, workTime }: JobPostQueryDto,
   ) {
