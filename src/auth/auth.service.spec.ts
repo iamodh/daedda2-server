@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthRequest, AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { todo } from 'node:test';
 import * as bcrypt from 'bcrypt';
 import { User } from '../users/entities/user.entity';
 import {
