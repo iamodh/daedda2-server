@@ -32,7 +32,7 @@ const mockJobPost = {
     nickname: 'tester',
     imageUrl: null,
   },
-} as unknown as JobPost;
+} as JobPost;
 
 describe('JobPostsService', () => {
   let service: JobPostsService;
