@@ -35,7 +35,7 @@ export class AuthService {
     }
 
     if (!bcrypt.compareSync(signInDto.password, user.password)) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
     }
 
     // JWT standards

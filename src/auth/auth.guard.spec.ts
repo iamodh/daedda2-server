@@ -1,5 +1,7 @@
+import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '../auth/auth.guard';
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 // 최소 서비스 사용을 위한 mock
 const mockJwtService = {
@@ -33,7 +35,10 @@ describe('AuthGuard', () => {
     jest.clearAllMocks();
     mockConfigService.get.mockReturnValue('secret-key');
 
-    guard = new AuthGuard(mockJwtService as any, mockConfigService as any);
+    guard = new AuthGuard(
+      mockJwtService as unknown as JwtService,
+      mockConfigService as unknown as ConfigService,
+    );
   });
 
   it('Authorization 헤더가 없으면 UnauthorizedException을 반환한다.', async () => {
