@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SignUpDto } from '../auth/dto/signUp.dto';
 import { UpdateUserDto } from './dto/updateUserDto';
@@ -18,15 +18,21 @@ export class UsersService {
   }): Promise<User | null> {
     const { username, userId } = identifier;
 
+    let result: User | null = null;
+
     if (username) {
-      return await this.usersRepository.findOneBy({ username });
+      result = await this.usersRepository.findOneBy({ username });
     }
 
     if (userId) {
-      return await this.usersRepository.findOneBy({ id: userId });
+      result = await this.usersRepository.findOneBy({ id: userId });
     }
 
-    return null;
+    if (result === null) {
+      throw new NotFoundException('해당 유저를 찾을 수 없습니다.');
+    }
+
+    return result;
   }
 
   async create(signUpDto: SignUpDto): Promise<User> {
