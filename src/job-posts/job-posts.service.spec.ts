@@ -27,8 +27,6 @@ const mockJobPost = {
   imageUrl: null,
   hourlyWage: 10000,
   createdAt: new Date('2025-08-12T10:00:00.000Z'),
-  updatedAt: new Date('2025-08-12T10:00:00.000Z'),
-  deletedAt: null,
   user: {
     id: 1,
     nickname: 'tester',
@@ -39,30 +37,38 @@ const mockJobPost = {
 describe('JobPostsService', () => {
   let service: JobPostsService;
 
-  let mockJobPostsRepo: jest.Mocked<Repository<JobPost>>;
-  let mockQueryBuilder: jest.Mocked<SelectQueryBuilder<JobPost>>;
+  type RepoMethods =
+    | 'createQueryBuilder'
+    | 'findOne'
+    | 'insert'
+    | 'update'
+    | 'delete';
+  let mockRepo: jest.Mocked<Pick<Repository<JobPost>, RepoMethods>>;
+
+  type QbMethods = 'where' | 'andWhere' | 'orderBy' | 'limit' | 'getMany';
+  let mockQb: jest.Mocked<Pick<SelectQueryBuilder<JobPost>, QbMethods>>;
 
   beforeEach(async () => {
-    mockQueryBuilder = {
+    mockQb = {
       where: jest.fn().mockReturnThis(),
       andWhere: jest.fn().mockReturnThis(),
       orderBy: jest.fn().mockReturnThis(),
       limit: jest.fn().mockReturnThis(),
       getMany: jest.fn(),
-    } as unknown as jest.Mocked<SelectQueryBuilder<JobPost>>;
+    };
 
-    mockJobPostsRepo = {
-      createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
+    mockRepo = {
+      createQueryBuilder: jest.fn().mockReturnValue(mockQb),
       findOne: jest.fn(),
       insert: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
-    } as unknown as jest.Mocked<Repository<JobPost>>;
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         JobPostsService,
-        { provide: getRepositoryToken(JobPost), useValue: mockJobPostsRepo },
+        { provide: getRepositoryToken(JobPost), useValue: mockRepo },
       ],
     }).compile();
 
@@ -84,22 +90,17 @@ describe('JobPostsService', () => {
         .fill(mockJobPost)
         .map((p, i) => ({ ...p, i: i + 1 }));
 
-      mockQueryBuilder.getMany.mockResolvedValue(mockPosts);
+      mockQb.getMany.mockResolvedValue(mockPosts);
 
       const result = await service.findAll({ limit });
 
       expect(result.data).toEqual(mockPosts);
       expect(result.nextCursor).toBeNull();
-      expect(mockJobPostsRepo.createQueryBuilder).toHaveBeenCalledWith(
-        'job_post',
-      );
-      expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith(
-        'job_post.createdAt',
-        'DESC',
-      );
-      expect(mockQueryBuilder.limit).toHaveBeenCalledWith(limit + 1);
+      expect(mockRepo.createQueryBuilder).toHaveBeenCalledWith('job_post');
+      expect(mockQb.orderBy).toHaveBeenCalledWith('job_post.createdAt', 'DESC');
+      expect(mockQb.limit).toHaveBeenCalledWith(limit + 1);
       // showPast가 false(기본값)이므로 미래 날짜만 조회
-      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+      expect(mockQb.andWhere).toHaveBeenCalledWith(
         'job_post.date >= CURRENT_DATE',
       );
     });
@@ -114,7 +115,7 @@ describe('JobPostsService', () => {
           createdAt: new Date(`2025-08-0${i + 1}T10:00:00Z`),
         }));
 
-      mockQueryBuilder.getMany.mockResolvedValue(mockPosts);
+      mockQb.getMany.mockResolvedValue(mockPosts);
 
       const result = await service.findAll({ limit });
       expect(result.data.length).toBe(limit); // 마지막 데이터 제거
@@ -132,31 +133,31 @@ describe('JobPostsService', () => {
           id: i + 1,
           createdAt: new Date(`2025-08-0${i + 1}T10:00:00Z`),
         }));
-      mockQueryBuilder.getMany.mockResolvedValue(mockPosts);
+      mockQb.getMany.mockResolvedValue(mockPosts);
 
       const cursor = new Date().toISOString();
       await service.findAll({ limit, cursor });
-      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+      expect(mockQb.andWhere).toHaveBeenCalledWith(
         'job_post.createdAt < :cursor',
         { cursor },
       );
     });
 
     it('showPast가 true이면 지난 날짜의 게시글도 포함해야 한다.', async () => {
-      mockQueryBuilder.getMany.mockResolvedValue([]);
+      mockQb.getMany.mockResolvedValue([]);
       await service.findAll({ showPast: true });
       // `job_post.date >= CURRENT_DATE` 조건이 호출되지 않았는지 확인
-      expect(mockQueryBuilder.andWhere).not.toHaveBeenCalledWith(
+      expect(mockQb.andWhere).not.toHaveBeenCalledWith(
         'job_post.date >= CURRENT_DATE',
       );
     });
 
     it('searchKeyword 필터가 적용되어야 한다.', async () => {
-      mockQueryBuilder.getMany.mockResolvedValue([]);
+      mockQb.getMany.mockResolvedValue([]);
 
       const searchKeyword = 'test';
       await service.findAll({ searchKeyword });
-      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+      expect(mockQb.andWhere).toHaveBeenCalledWith(
         '(job_post.title ILIKE :keyword OR job_post.content ILIKE :keyword)',
         {
           keyword: `%${searchKeyword}%`,
@@ -165,20 +166,20 @@ describe('JobPostsService', () => {
     });
 
     it('workTime 필터(SHORT)가 적용되어야 한다', async () => {
-      mockQueryBuilder.getMany.mockResolvedValue([]);
+      mockQb.getMany.mockResolvedValue([]);
 
       await service.findAll({ workTime: WorkTime.SHORT });
-      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+      expect(mockQb.andWhere).toHaveBeenCalledWith(
         'job_post.totalHours <= :maxHour',
         { maxHour: 4 },
       );
     });
 
     it('hourlyWage 필터(HIGH)가 적용되어야 한다', async () => {
-      mockQueryBuilder.getMany.mockResolvedValue([]);
+      mockQb.getMany.mockResolvedValue([]);
 
       await service.findAll({ hourlyWage: HourlyWage.HIGH });
-      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+      expect(mockQb.andWhere).toHaveBeenCalledWith(
         'job_post.hourlyWage > :hourlyWage',
         { hourlyWage: 10000 },
       );
@@ -187,11 +188,11 @@ describe('JobPostsService', () => {
 
   describe('findOne', () => {
     it('id에 해당하는 게시글을 반환해야 한다.', async () => {
-      mockJobPostsRepo.findOne.mockResolvedValue(mockJobPost);
+      mockRepo.findOne.mockResolvedValue(mockJobPost);
       const result = await service.findOne(1);
 
       expect(result).toEqual(mockJobPost);
-      expect(mockJobPostsRepo.findOne).toHaveBeenCalledWith({
+      expect(mockRepo.findOne).toHaveBeenCalledWith({
         where: { id: 1 },
         relations: { user: true },
         select: {
@@ -200,7 +201,7 @@ describe('JobPostsService', () => {
       });
     });
     it('게시글을 찾지 못하면 NotFoundException을 던져야 한다.', async () => {
-      mockJobPostsRepo.findOne.mockResolvedValue(null);
+      mockRepo.findOne.mockResolvedValue(null);
       await expect(service.findOne(999)).rejects.toThrow(
         new NotFoundException('Post with Id 999 not found'),
       );
@@ -229,11 +230,11 @@ describe('JobPostsService', () => {
         generatedMaps: [],
         raw: {},
       };
-      mockJobPostsRepo.insert.mockResolvedValue(insertResult);
+      mockRepo.insert.mockResolvedValue(insertResult);
 
       const result = await service.create(createDto);
       expect(result).toEqual(insertResult);
-      expect(mockJobPostsRepo.insert).toHaveBeenCalledWith(createDto);
+      expect(mockRepo.insert).toHaveBeenCalledWith(createDto);
     });
   });
 
@@ -243,10 +244,10 @@ describe('JobPostsService', () => {
       const ownerId = 1;
       const updateDto: UpdateJobPostDto = { title: 'Updated title' };
       const updateResult = { affected: 1 } as UpdateResult;
-      mockJobPostsRepo.update.mockResolvedValue(updateResult);
+      mockRepo.update.mockResolvedValue(updateResult);
 
       const result = await service.update(jobPostId, ownerId, updateDto);
-      expect(mockJobPostsRepo.update).toHaveBeenCalledWith(
+      expect(mockRepo.update).toHaveBeenCalledWith(
         {
           id: jobPostId,
           userId: ownerId,
@@ -260,7 +261,7 @@ describe('JobPostsService', () => {
       const ownerId = 2;
       const updateDto: UpdateJobPostDto = { title: 'Updated title' };
       const updateResult = { affected: 0 } as UpdateResult;
-      mockJobPostsRepo.update.mockResolvedValue(updateResult);
+      mockRepo.update.mockResolvedValue(updateResult);
 
       await expect(
         service.update(jobPostId, ownerId, updateDto),
@@ -275,10 +276,10 @@ describe('JobPostsService', () => {
       const ownerId = 1;
       const deleteResult = { affected: 1 } as DeleteResult;
 
-      mockJobPostsRepo.delete.mockResolvedValue(deleteResult);
+      mockRepo.delete.mockResolvedValue(deleteResult);
       const result = await service.delete(jobPostId, ownerId);
       expect(result).toBe(deleteResult);
-      expect(mockJobPostsRepo.delete).toHaveBeenCalledWith({
+      expect(mockRepo.delete).toHaveBeenCalledWith({
         id: jobPostId,
         userId: ownerId,
       });
@@ -287,7 +288,7 @@ describe('JobPostsService', () => {
       const jobPostId = 1;
       const ownerId = 2;
       const deleteResult = { affected: 0 } as DeleteResult;
-      mockJobPostsRepo.delete.mockResolvedValue(deleteResult);
+      mockRepo.delete.mockResolvedValue(deleteResult);
 
       await expect(service.delete(jobPostId, ownerId)).rejects.toThrow(
         new ForbiddenException('해당 글의 삭제 권한이 없습니다.'),
