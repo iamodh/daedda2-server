@@ -49,7 +49,7 @@ describe('AuthService', () => {
   });
 
   describe('signIn', () => {
-    const signInDto = {
+    const mockDto = {
       username: 'test',
       password: 'testpassword',
     } as SignInDto;
@@ -59,19 +59,19 @@ describe('AuthService', () => {
       password: 'hashedpassword', // 실제로는 해싱된 비밀번호
     } as User;
 
-    it('유저 정보가 일치하면 access_token을 반환해야 한다.', async () => {
+    it('signInDto로 전달된 유저의 정보를 인증하고, jwt 토큰을 생성하여 반환한다.', async () => {
       usersService.findOne.mockResolvedValue(mockUser);
       (bcrypt.compareSync as jest.Mock).mockReturnValue(true);
       const mockToken = 'mock-jwt-token';
       jwtService.signAsync.mockResolvedValue(mockToken);
 
-      const result = await service.signIn(signInDto);
+      const result = await service.signIn(mockDto);
 
       expect(usersService.findOne).toHaveBeenCalledWith({
-        username: signInDto.username,
+        username: mockDto.username,
       });
       expect(bcrypt.compareSync).toHaveBeenCalledWith(
-        signInDto.password,
+        mockDto.password,
         mockUser.password,
       );
       expect(jwtService.signAsync).toHaveBeenCalledWith({
@@ -81,18 +81,18 @@ describe('AuthService', () => {
       expect(result).toEqual({ access_token: mockToken });
     });
 
-    it('username에 해당하는 유저 정보가 없으면 NotFoundException을 반환해야 한다.', async () => {
+    it('signInDto의 유저가 존재하지 않으면 NotFoundExceptiond을 던진다.', async () => {
       usersService.findOne.mockResolvedValue(null);
-      await expect(service.signIn(signInDto)).rejects.toThrow(
+      await expect(service.signIn(mockDto)).rejects.toThrow(
         new NotFoundException('존재하지 않는 아이디입니다.'),
       );
       expect(jwtService.signAsync).not.toHaveBeenCalled();
     });
 
-    it('비밀번호가 일치하지 않으면 UnauthorizedException을 반환해야 한다.', async () => {
+    it('유저 인증에 실패하면 UnauthorizedException을 던진다.', async () => {
       usersService.findOne.mockResolvedValue(mockUser);
       (bcrypt.compareSync as jest.Mock).mockReturnValue(false);
-      await expect(service.signIn(signInDto)).rejects.toThrow(
+      await expect(service.signIn(mockDto)).rejects.toThrow(
         new UnauthorizedException('비밀번호가 일치하지 않습니다.'),
       );
       expect(jwtService.signAsync).not.toHaveBeenCalled();
@@ -100,7 +100,7 @@ describe('AuthService', () => {
   });
 
   describe('signUp', () => {
-    const signUpDto = {
+    const mockDto = {
       username: 'test',
       password: 'testpassword',
     } as SignUpDto;
@@ -115,11 +115,11 @@ describe('AuthService', () => {
       usersService.create.mockResolvedValue(mockUser);
       jwtService.signAsync.mockResolvedValue(mockToken);
 
-      const result = await service.signUp(signUpDto);
+      const result = await service.signUp(mockDto);
       expect(usersService.findOne).toHaveBeenCalledWith({
-        username: signUpDto.username,
+        username: mockDto.username,
       });
-      expect(usersService.create).toHaveBeenCalledWith(signUpDto);
+      expect(usersService.create).toHaveBeenCalledWith(mockDto);
       expect(jwtService.signAsync).toHaveBeenCalledWith({
         sub: mockUser.id,
         username: mockUser.username,
@@ -128,7 +128,7 @@ describe('AuthService', () => {
     });
     it('username이 중복되면 ConflictException을 반환해야 한다.', async () => {
       usersService.findOne.mockResolvedValue(mockUser);
-      await expect(service.signUp(signUpDto)).rejects.toThrow(
+      await expect(service.signUp(mockDto)).rejects.toThrow(
         new ConflictException('이미 존재하는 사용자입니다.'),
       );
       expect(usersService.create).not.toHaveBeenCalled();
@@ -137,7 +137,7 @@ describe('AuthService', () => {
   });
 
   describe('getProfile', () => {
-    const req = {
+    const mockReq = {
       user: {
         username: 'test',
         sub: 1,
@@ -152,19 +152,19 @@ describe('AuthService', () => {
 
     it('username과 일치하는 유저 정보에서 비밀번호를 제외한 데이터를 반환해야 한다.', async () => {
       usersService.findOne.mockResolvedValue(mockUser);
-      const result = await service.getProfile(req);
+      const result = await service.getProfile(mockReq);
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...expectedUser } = mockUser;
       expect(result).toEqual(expectedUser);
       expect(result).not.toHaveProperty('password');
       expect(usersService.findOne).toHaveBeenCalledWith({
-        username: req.user.username,
+        username: mockReq.user.username,
       });
     });
     it('해당하는 username이 없다면 NotFoundException을 반환해야 한다.', async () => {
       usersService.findOne.mockResolvedValue(null);
-      await expect(service.getProfile(req)).rejects.toThrow(
+      await expect(service.getProfile(mockReq)).rejects.toThrow(
         new NotFoundException('test에 해당하는 유저를 찾을 수 없습니다.'),
       );
     });

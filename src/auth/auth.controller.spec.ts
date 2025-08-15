@@ -35,41 +35,45 @@ describe('AuthController', () => {
     controller = module.get<AuthController>(AuthController);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
 
   describe('login', () => {
-    const signInDto = {
+    const mockDto = {
       username: 'test',
       password: 'testpassword',
     } as SignInDto;
 
-    const token = { access_token: 'mock-jwt-token' };
+    const mockToken = { access_token: 'mock-jwt-mockToken' };
 
     it('dto를 서비스에 전달하고 반환값을 그대로 응답한다.', async () => {
-      authService.signIn.mockResolvedValue(token);
+      authService.signIn.mockResolvedValue(mockToken);
 
-      await expect(controller.signIn(signInDto)).resolves.toEqual(token);
-      expect(authService.signIn).toHaveBeenCalledWith(signInDto);
+      await expect(controller.signIn(mockDto)).resolves.toEqual(mockToken);
+      expect(authService.signIn).toHaveBeenCalledWith(mockDto);
     });
   });
 
   describe('register', () => {
-    const signUpDto = {
+    const mockDto = {
       username: 'test',
       password: 'testpassword',
     } as SignUpDto;
-    const token = { access_token: 'mock-jwt-token' };
+    const mockToken = { access_token: 'mock-jwt-token' };
 
     it('dto를 서비스에 전달하고 반환값을 그대로 응답한다.', async () => {
-      authService.signUp.mockResolvedValue(token);
-      await expect(controller.signUp(signUpDto)).resolves.toEqual(token);
-      expect(authService.signUp).toHaveBeenCalledWith(signUpDto);
+      authService.signUp.mockResolvedValue(mockToken);
+      await expect(controller.signUp(mockDto)).resolves.toEqual(mockToken);
+      expect(authService.signUp).toHaveBeenCalledWith(mockDto);
     });
   });
   describe('profile', () => {
-    const req = {
+    const mockReq = {
       user: {
         username: 'test',
         sub: 1,
@@ -82,8 +86,8 @@ describe('AuthController', () => {
 
     it('dto를 서비스에 전달하고 반환값을 그대로 응답한다.', async () => {
       authService.getProfile.mockResolvedValue(mockUser);
-      await expect(controller.getProfile(req)).resolves.toEqual(mockUser);
-      expect(authService.getProfile).toHaveBeenCalledWith(req);
+      await expect(controller.getProfile(mockReq)).resolves.toEqual(mockUser);
+      expect(authService.getProfile).toHaveBeenCalledWith(mockReq);
     });
   });
 });
