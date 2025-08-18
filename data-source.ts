@@ -13,7 +13,7 @@ const options: DataSourceOptions & SeederOptions = {
   port: config.get<number>('DB_PORT'),
   username: config.get<string>('DB_USERNAME'),
   password: config.get<string>('DB_PASSWORD'),
-  database: config.get<string>('DB_NAME'),
+  database: config.get<string>('DB_DATABASE'),
 
   seeds: ['src/database/seeds/index.seeder.ts'],
   entities: ['src/**/*.entity.ts'],
