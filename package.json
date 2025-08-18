@@ -83,7 +83,8 @@
       "!**/*.module.ts",
       "!database/seeds/**",
       "!**/entities/**",
-      "!**/dto/**"
+      "!**/dto/**",
+      "!**/config/**"
     ],
     "coverageReporters": [
       "lcov",
