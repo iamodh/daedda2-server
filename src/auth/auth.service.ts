@@ -18,6 +18,10 @@ export interface AuthRequest extends Request {
     sub: number;
   };
 }
+
+export interface LoginResponse {
+  access_token: string;
+}
 @Injectable()
 export class AuthService {
   constructor(
@@ -47,7 +51,7 @@ export class AuthService {
     };
   }
 
-  async signUp(signUpDto: SignUpDto): Promise<{ access_token: string }> {
+  async signUp(signUpDto: SignUpDto): Promise<LoginResponse> {
     const existingUser = await this.usersService.findOne({
       username: signUpDto.username,
     });
