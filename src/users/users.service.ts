@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SignUpDto } from '../auth/dto/signUp.dto';
 import { UpdateUserDto } from './dto/updateUserDto';
@@ -26,10 +26,6 @@ export class UsersService {
 
     if (userId) {
       result = await this.usersRepository.findOneBy({ id: userId });
-    }
-
-    if (result === null) {
-      throw new NotFoundException('해당 유저를 찾을 수 없습니다.');
     }
 
     return result;
