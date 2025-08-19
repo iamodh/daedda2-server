@@ -122,7 +122,7 @@ export class JobPostsService {
   ) {
     if (searchKeyword) {
       queryBuilder.andWhere(
-        '(job_post.title ILIKE :keyword OR job_post.content ILIKE :keyword)',
+        '(job_post.title ILIKE :keyword OR job_post.content ILIKE :keyword OR job_post.place ILIKE :keyword)',
         {
           keyword: `%${searchKeyword}%`,
         },
