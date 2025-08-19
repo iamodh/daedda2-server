@@ -309,12 +309,12 @@ describe('AppController (e2e)', () => {
         .expect(404);
     });
 
-    it('자신이 작성한 게시글을 수정할 수 있다. (PATCH 200)', () => {
+    it('자신이 작성한 게시글을 수정할 수 있다. (PATCH 200)', async () => {
       const updateJobPostDto = {
         title: '게시글 업데이트 테스트',
       };
 
-      return request(app.getHttpServer())
+      return await request(app.getHttpServer())
         .patch(`/job-posts/${jobPost.id}`)
         .set('Authorization', `Bearer ${userToken}`)
         .send(updateJobPostDto)
@@ -325,42 +325,42 @@ describe('AppController (e2e)', () => {
           });
         });
     });
-    it('다른 사람이 작성한 게시글을 수정할 수 없다. (PATCH 403)', () => {
+    it('다른 사람이 작성한 게시글을 수정할 수 없다. (PATCH 403)', async () => {
       const updateJobPostDto = {
         title: '게시글 업데이트 테스트',
       };
 
-      return request(app.getHttpServer())
+      return await request(app.getHttpServer())
         .patch(`/job-posts/${jobPost.id}`)
         .set('Authorization', `Bearer ${otherToken}`)
         .send(updateJobPostDto)
         .expect(403);
     });
-    it('로그인 하지 않고 게시글을 수정할 수 없다. (PATCH 401)', () => {
+    it('로그인 하지 않고 게시글을 수정할 수 없다. (PATCH 401)', async () => {
       const updateJobPostDto = {
         title: '게시글 업데이트 테스트',
       };
 
-      return request(app.getHttpServer())
+      return await request(app.getHttpServer())
         .patch(`/job-posts/${jobPost.id}`)
         .send(updateJobPostDto)
         .expect(401);
     });
 
-    it('자신이 작성한 게시글을 삭제할 수 있다. (DELETE 201)', () => {
-      return request(app.getHttpServer())
+    it('자신이 작성한 게시글을 삭제할 수 있다. (DELETE 200)', async () => {
+      return await request(app.getHttpServer())
         .delete(`/job-posts/${jobPost.id}`)
         .set('Authorization', `Bearer ${userToken}`)
         .expect(200);
     });
-    it('다른 사람이 작성한 게시글을 삭제할 수 없다. (DELETE 403)', () => {
-      return request(app.getHttpServer())
+    it('다른 사람이 작성한 게시글을 삭제할 수 없다. (DELETE 403)', async () => {
+      return await request(app.getHttpServer())
         .delete(`/job-posts/${jobPost.id}`)
         .set('Authorization', `Bearer ${otherToken}`)
         .expect(403);
     });
-    it('로그인 하지 않고 게시글을 삭제할 수 없다. (DELETE 401)', () => {
-      return request(app.getHttpServer())
+    it('로그인 하지 않고 게시글을 삭제할 수 없다. (DELETE 401)', async () => {
+      return await request(app.getHttpServer())
         .delete(`/job-posts/${jobPost.id}`)
         .expect(401);
     });
