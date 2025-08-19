@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, Res } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import * as request from 'supertest';
 import { App } from 'supertest/types';
@@ -10,7 +10,6 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { JobPost } from '../src/job-posts/entities/job-post.entity';
 import { LoginResponse } from '../src/auth/auth.service';
 import { HourlyWage, WorkTime } from '../src/job-posts/dto/job-post-query.dto';
-import { todo } from 'node:test';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
@@ -310,7 +309,7 @@ describe('AppController (e2e)', () => {
         .expect(404);
     });
 
-    it('자신이 작성한 게시글을 수정할 수 있다. (PATCH 201)', () => {
+    it('자신이 작성한 게시글을 수정할 수 있다. (PATCH 200)', () => {
       const updateJobPostDto = {
         title: '게시글 업데이트 테스트',
       };
@@ -368,23 +367,103 @@ describe('AppController (e2e)', () => {
   });
 
   describe('/auth/login', () => {
-    todo('알맞은 유저 정보를 통해 로그인을 진행한다. (POST 200)');
-    todo('유저 아이디가 존재하지 않는다면 로그인할 수 없다. (POST 404)');
-    todo('비밀번호가 틀렸다면 로그인할 수 없다. (POST 401)');
+    it('알맞은 유저 정보를 통해 로그인을 진행한다. (POST 200)', async () => {
+      const loginDto = {
+        username: 'testuser',
+        password: 'testpassword',
+      };
+
+      const res = await request(app.getHttpServer())
+        .post('/auth/login')
+        .send(loginDto)
+        .expect(200);
+
+      expect(res.body).toMatchObject({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        access_token: expect.any(String),
+      });
+    });
+
+    it('유저 아이디가 존재하지 않는다면 로그인할 수 없다. (POST 404)', async () => {
+      return await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({ username: 'wrongusername', password: 'testpassword' })
+        .expect(404);
+    });
+    it('비밀번호가 틀렸다면 로그인할 수 없다. (POST 401)', async () => {
+      return await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({ username: 'testuser', password: 'wrongpassword' })
+        .expect(401);
+    });
   });
 
   describe('/auth/register', () => {
-    todo('새로운 유저 정보로 회원가입을 할 수 있다. (POST 201)');
-    todo('유저 아이디가 중복이라면 회원가입을 할 수 없다. (POST 409)');
+    it('새로운 유저 정보로 회원가입을 할 수 있다. (POST 201)', async () => {
+      const signUpDto = {
+        username: 'newuser',
+        password: 'password',
+        nickname: 'new',
+        phone: '010-1111-1111',
+        email: 'new@test.com',
+        imageUrl: null,
+      };
+
+      const res = await request(app.getHttpServer())
+        .post('/auth/register')
+        .send(signUpDto)
+        .expect(201);
+
+      console.log(res.body);
+    });
+    it('유저 아이디가 중복이라면 회원가입을 할 수 없다. (POST 409)', async () => {
+      const signUpDto = {
+        username: 'testuser',
+        password: 'password',
+        nickname: 'duplicate',
+        phone: '010-1111-1111',
+        email: 'dup@test.com',
+        imageUrl: null,
+      };
+
+      return await request(app.getHttpServer())
+        .post('/auth/register')
+        .send(signUpDto)
+        .expect(409);
+    });
   });
 
   describe('/auth/profile', () => {
-    todo('비밀번호를 제외한 유저 정보를 얻을 수 있다. (GET 200)');
-    todo('올바른 헤더가 아니라면 유저 정보를 얻을 수 없다. (GET 401)');
+    it('비밀번호를 제외한 유저 정보를 얻을 수 있다. (GET 200)', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/auth/profile')
+        .set('Authorization', `Bearer ${userToken}`)
+        .expect(200);
+      expect(res.body).not.toHaveProperty('password');
+    });
+    it('요청에 Authorization 헤더가 없다면 유저 정보를 얻을 수 없다. (GET 401)', async () => {
+      return await request(app.getHttpServer())
+        .get('/auth/profile')
+        .expect(401);
+    });
   });
 
-  describe('/user/:id', () => {
-    todo('userId로 유저 정보를 조회할 수 있다. (GET 200)');
-    todo('유저 정보를 수정할 수 있다. (PATCH 201)');
+  describe('/users/:id', () => {
+    it('userId로 유저 정보를 조회할 수 있다. (GET 200)', async () => {
+      const res = await request(app.getHttpServer())
+        .get(`/users/${user.id}`)
+        .expect(200);
+
+      console.log(res.body);
+    });
+    it('유저 정보를 수정할 수 있다. (PATCH 200)', async () => {
+      const updateDto = {
+        nickname: 'updated',
+      };
+      return await request(app.getHttpServer())
+        .patch(`/users/${user.id}`)
+        .send(updateDto)
+        .expect(200);
+    });
   });
 });
