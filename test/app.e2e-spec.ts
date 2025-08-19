@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, Res } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import * as request from 'supertest';
 import { App } from 'supertest/types';
@@ -10,6 +10,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { JobPost } from '../src/job-posts/entities/job-post.entity';
 import { LoginResponse } from '../src/auth/auth.service';
 import { HourlyWage, WorkTime } from '../src/job-posts/dto/job-post-query.dto';
+import { todo } from 'node:test';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
@@ -285,6 +286,30 @@ describe('AppController (e2e)', () => {
       otherToken = (loginRes.body as LoginResponse).access_token;
     });
 
+    it('작성자 정보를 포함한 게시글 상세 정보를 불러온다. (GET 200)', async () => {
+      const res = await request(app.getHttpServer())
+        .get(`/job-posts/${jobPost.id}`)
+        .expect(200);
+
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          id: jobPost.id,
+          title: '게시글 작성 테스트',
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          user: expect.objectContaining({
+            id: user.id,
+            nickname: 'tester',
+          }),
+        }),
+      );
+    });
+
+    it('존재하지 않는 id의 게시글을 불러올 수 없다. (GET 404)', async () => {
+      return await request(app.getHttpServer())
+        .get(`/job-posts/999`)
+        .expect(404);
+    });
+
     it('자신이 작성한 게시글을 수정할 수 있다. (PATCH 201)', () => {
       const updateJobPostDto = {
         title: '게시글 업데이트 테스트',
@@ -340,5 +365,26 @@ describe('AppController (e2e)', () => {
         .delete(`/job-posts/${jobPost.id}`)
         .expect(401);
     });
+  });
+
+  describe('/auth/login', () => {
+    todo('알맞은 유저 정보를 통해 로그인을 진행한다. (POST 200)');
+    todo('유저 아이디가 존재하지 않는다면 로그인할 수 없다. (POST 404)');
+    todo('비밀번호가 틀렸다면 로그인할 수 없다. (POST 401)');
+  });
+
+  describe('/auth/register', () => {
+    todo('새로운 유저 정보로 회원가입을 할 수 있다. (POST 201)');
+    todo('유저 아이디가 중복이라면 회원가입을 할 수 없다. (POST 409)');
+  });
+
+  describe('/auth/profile', () => {
+    todo('비밀번호를 제외한 유저 정보를 얻을 수 있다. (GET 200)');
+    todo('올바른 헤더가 아니라면 유저 정보를 얻을 수 없다. (GET 401)');
+  });
+
+  describe('/user/:id', () => {
+    todo('userId로 유저 정보를 조회할 수 있다. (GET 200)');
+    todo('유저 정보를 수정할 수 있다. (PATCH 201)');
   });
 });
