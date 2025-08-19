@@ -413,8 +413,10 @@ describe('AppController (e2e)', () => {
         .post('/auth/register')
         .send(signUpDto)
         .expect(201);
-
-      console.log(res.body);
+      expect(res.body).toMatchObject({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        access_token: expect.any(String),
+      });
     });
     it('유저 아이디가 중복이라면 회원가입을 할 수 없다. (POST 409)', async () => {
       const signUpDto = {
@@ -454,7 +456,9 @@ describe('AppController (e2e)', () => {
         .get(`/users/${user.id}`)
         .expect(200);
 
-      console.log(res.body);
+      expect(res.body).toMatchObject({
+        id: user.id,
+      });
     });
     it('유저 정보를 수정할 수 있다. (PATCH 200)', async () => {
       const updateDto = {
