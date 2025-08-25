@@ -13,7 +13,12 @@ import { TypeOrmConfigService } from './config/typeorm.config.service';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
+      envFilePath:
+        process.env.NODE_ENV === 'test'
+          ? '.env.test'
+          : process.env.NODE_ENV === 'prod'
+            ? '.env.prod'
+            : '.env',
     }),
     TypeOrmModule.forRootAsync({
       useClass: TypeOrmConfigService,
