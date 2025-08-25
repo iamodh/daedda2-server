@@ -1,7 +1,8 @@
 import { ConfigService } from '@nestjs/config';
 import { configDotenv } from 'dotenv';
-import { DataSource, DataSourceOptions } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { SeederOptions } from 'typeorm-extension';
+import type { DataSourceOptions } from 'typeorm';
 
 configDotenv();
 
