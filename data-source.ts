@@ -4,7 +4,7 @@ import { DataSource } from 'typeorm';
 import type { SeederOptions } from 'typeorm-extension';
 import type { DataSourceOptions } from 'typeorm';
 
-configDotenv();
+configDotenv({ path: process.env.NODE_ENV === 'prod' ? '.env.prod' : '.env' });
 
 const config = new ConfigService();
 
